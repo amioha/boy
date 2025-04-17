@@ -34,15 +34,13 @@ app.post('/add-professional', (req, res) => {
   const serviceIndex = services.findIndex(s => s.name.toLowerCase().trim() === name.trim().toLowerCase());
 
   if (serviceIndex !== -1) {
-    const existingKeywordsRaw = services[serviceIndex].keywords;
-    const existingKeywordsCleaned = existingKeywordsRaw.map(cleanKeyword);
+    const existingKeywordsCleaned = services[serviceIndex].keywords.map(cleanKeyword);
     const addedKeywords = [];
 
-    newKeywordsRaw.forEach((kw, i) => {
-      const cleaned = newKeywordsCleaned[i];
+    newKeywordsCleaned.forEach((cleaned, i) => {
       if (!existingKeywordsCleaned.includes(cleaned)) {
-        services[serviceIndex].keywords.push(kw.trim());
-        addedKeywords.push(kw.trim());
+        services[serviceIndex].keywords.push(cleaned);
+        addedKeywords.push(cleaned);
       }
     });
 
@@ -58,7 +56,7 @@ app.post('/add-professional', (req, res) => {
   const newService = {
     name: name.trim(),
     title: name.trim(),
-    keywords: newKeywordsRaw,
+    keywords: newKeywordsCleaned,
     contact: contact.trim(),
     location: phone.trim(),
     note: "",
