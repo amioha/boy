@@ -1,0 +1,78 @@
+
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>הוספת בעל מקצוע לבוט</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial;
+      max-width: 500px;
+      margin: 40px auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      box-sizing: border-box;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: green;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    #form-section {
+      display: none;
+    }
+  </style>
+  <script>
+    function checkPassword() {
+      const pass = document.getElementById('passcode').value;
+      if (pass === '0415') {
+        document.getElementById('auth-section').style.display = 'none';
+        document.getElementById('form-section').style.display = 'block';
+      } else {
+        alert('סיסמה שגויה');
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="auth-section">
+    <label for="passcode">הכנס סיסמה:</label>
+    <input type="password" id="passcode">
+    <button onclick="checkPassword()">אישור</button>
+  </div>
+
+  <div id="form-section">
+    <h2>הוספת שירות חדש לבוט</h2>
+    <form action="/add-professional" method="POST">
+      <label for="name">שם השירות:</label>
+      <input type="text" id="name" name="name" required>
+
+      <label for="contact">שם בעל מקצוע:</label>
+      <input type="text" id="contact" name="contact">
+
+      <label for="phone">טלפון:</label>
+      <input type="text" id="phone" name="phone">
+
+      <label for="keywords">מילות מפתח (מופרדות בפסיקים):</label>
+      <textarea id="keywords" name="keywords" rows="3"></textarea>
+
+      <button type="submit">הוסף שירות</button>
+    </form>
+  </div>
+</body>
+</html>
