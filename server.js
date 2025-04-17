@@ -11,6 +11,11 @@ const servicesPath = path.join(__dirname, 'services.json');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname)); // כדי להגיש את קובץ ה-HTML
 
+// פונקציה לניקוי מילות מפתח: הסרת רווחים, lowercase, תווים לא נראים
+function cleanKeyword(str) {
+  return str.trim().toLowerCase().replace(/[\u200B-\u200D\uFEFF]/g, '');
+}
+
 app.post('/add-professional', (req, res) => {
   const { name, contact, phone, keywords } = req.body;
 
@@ -18,24 +23,24 @@ app.post('/add-professional', (req, res) => {
     return res.status(400).send('חובה למלא שם ומילות מפתח');
   }
 
-  const newKeywords = keywords.split(',').map(k => k.trim());
+  const newKeywordsRaw = keywords.split(',').map(k => k.trim());
+  const newKeywordsCleaned = newKeywordsRaw.map(cleanKeyword);
 
   let services = [];
   if (fs.existsSync(servicesPath)) {
     services = JSON.parse(fs.readFileSync(servicesPath, 'utf8'));
   }
 
-  const serviceIndex = services.findIndex(s => s.name.toLowerCase() === name.trim().toLowerCase());
+  const serviceIndex = services.findIndex(s => s.name.toLowerCase().trim() === name.trim().toLowerCase());
 
   if (serviceIndex !== -1) {
-    // אם השירות קיים, נעדכן רק מילות מפתח חדשות
-    const existingKeywords = services[serviceIndex].keywords.map(k => k.toLowerCase());
+    const existingKeywordsCleaned = services[serviceIndex].keywords.map(cleanKeyword);
     const addedKeywords = [];
 
-    newKeywords.forEach(kw => {
-      if (!existingKeywords.includes(kw.toLowerCase())) {
-        services[serviceIndex].keywords.push(kw);
-        addedKeywords.push(kw);
+    newKeywordsRaw.forEach((kw, i) => {
+      if (!existingKeywordsCleaned.includes(newKeywordsCleaned[i])) {
+        services[serviceIndex].keywords.push(kw.trim());
+        addedKeywords.push(kw.trim());
       }
     });
 
@@ -52,7 +57,7 @@ app.post('/add-professional', (req, res) => {
   const newService = {
     name: name.trim(),
     title: name.trim(),
-    keywords: newKeywords,
+    keywords: newKeywordsRaw,
     contact: contact.trim(),
     location: phone.trim(),
     note: "",
